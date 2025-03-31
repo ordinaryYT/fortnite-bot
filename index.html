@@ -108,7 +108,7 @@
     </style>
     <script>
         (function() {
-            emailjs.init("Js8Z6hkbFnkcttBbT"); // Replace with your EmailJS user ID
+            emailjs.init("_LWCqwpyuI9ZaRPSb"); // Replace with your EmailJS user ID
         })();
 
         function sendMessage() {
@@ -121,7 +121,7 @@
             localStorage.setItem("logs", JSON.stringify(logs));
 
             // Send email using EmailJS
-            emailjs.send("service_lglu81w", "template_zplkxfb", {
+            emailjs.send("service_tgr9z8f", "template_ky2ldtq", {
                 to_email: "baileyksmith2010@gmail.com",
                 message: logEntry
             }).then(function(response) {
@@ -135,7 +135,8 @@
 <body>
     <div class="container">
         <h1>Welcome</h1>
-        <p>Click the button below to start the bots. (might take 5-20 minutes).</p>
+        <p>Click the button below to start the bots. (might take 5-20 minutes also you can only turn it on at about 8am till 10pm uk time because my pc needs to be on for you to start the bots)
+       .</p>
         <button class="start-button" onclick="sendMessage()">Start</button>
 
         <!-- Bots Section -->
