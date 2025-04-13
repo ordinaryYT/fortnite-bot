@@ -215,7 +215,6 @@
 <header>
   <h1>Fortnite Lobby Bots</h1>
   <input type="text" id="search" placeholder="Search OGsbot..." />
-  <!-- Request a custom public Fortnite Bot Button -->
   <button id="requestBotBtn">Request a Custom Public Fortnite Bot</button>
 </header>
 
@@ -275,13 +274,20 @@
     for (let i = 1; i <= 30; i++) {
       const div = document.createElement("div");
       div.className = "bot-card";
+      
+      // Randomly decide whether the bot is online or offline
+      const isOnline = Math.random() > 0.5;  // 50% chance to be online
+
+      const statusClass = isOnline ? 'online' : 'offline';
+      const statusText = isOnline ? '🟢 Online' : '🔴 Offline';
+
       div.innerHTML = `
         <img src="https://robohash.org/OGsbot${i}?set=set3" alt="OGsbot${i}">
         <div class="bot-name">
           OGsbot${i} <span class="verified-badge">✔️ Verified</span>
         </div>
         <div class="bot-desc">${descriptions[i % descriptions.length]}</div>
-        <div class="bot-status online">🟢 Online</div>
+        <div class="bot-status ${statusClass}">${statusText}</div>
         <p class="bot-region">Oregon (US West)</p>
       `;
       div.onclick = () => showModal(i);
@@ -327,6 +333,7 @@
         document.getElementById("customBotOverlay").style.display = "none";
       })
       .catch(error => {
+        console.error('Error:', error);
         alert('Error submitting request: ' + error.text);
       });
   }
